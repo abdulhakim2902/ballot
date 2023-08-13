@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
-import "@openzeppelin/contracts/access/Ownable.sol";
 /// @title Voting with delegation.
 
 interface IMyToken {
   function getPastVotes(address, uint256) external view returns (uint256);
 }
 
-contract Ballot is Ownable{
+contract Ballot {
   struct Proposal {
     bytes32 name;
     uint voteCount;
