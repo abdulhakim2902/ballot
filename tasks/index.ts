@@ -24,7 +24,7 @@ task("mint", "Minting token")
   .addOptionalParam("amount", "amount to be minted", "0", types.string)
   .setAction(mint);
 
-task("delegate", "Delegating to ERC20Votes contract")
+task("delegate", "Delegating to account address")
   .addOptionalParam("signer", "signer address", ZeroAddress, types.string)
   .addOptionalParam("contract", "contract address", ZeroAddress, types.string)
   .addOptionalParam("address", "delegatee address", ZeroAddress, types.string)
