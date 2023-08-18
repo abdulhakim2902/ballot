@@ -26,9 +26,9 @@ contract Ballot {
 
   mapping(address account => uint256 amount) public votingPowerSpent;
 
-  event giveVote(bytes32 name, uint256 proposal, uint256 amount);
-  event createBallot(bytes32 name, bytes32[] proposals, address owner);
-  event updateTargetBlockNumber(bytes32 name, uint256 oldTargetBlockNumber, uint256 newTargetBlockNumber);
+  event Vote(address voter, uint256 proposal, uint256 amount, bytes32 name);
+  event NewBallot(bytes32 name, bytes32[] proposals, address owner);
+  event UpdateTargetBlockNumber(bytes32 name, uint256 oldTargetBlockNumber, uint256 newTargetBlockNumber);
 
   constructor(address _tokenContract) {
     tokenContract = IMyToken(_tokenContract);
@@ -44,7 +44,7 @@ contract Ballot {
     votingPowerSpent[msg.sender] += amount;
     proposals[name][proposal].voteCount += amount;
 
-    emit giveVote(name, proposal, amount);
+    emit Vote(msg.sender, proposal, amount, name);
   }
 
   function votingPower(bytes32 name, address account) public view returns(uint256) {
@@ -80,7 +80,7 @@ contract Ballot {
     require(ballotMetadas[name].owner == msg.sender, "Ballot: not the ballot owner");
     uint256 oldTargetBlockNumber = ballotMetadas[name].targetBlockNumber;
     ballotMetadas[name].targetBlockNumber = _targetBlockNumber;
-    emit updateTargetBlockNumber(name, oldTargetBlockNumber, _targetBlockNumber);
+    emit UpdateTargetBlockNumber(name, oldTargetBlockNumber, _targetBlockNumber);
   }
 
   function newBallot(bytes32 name, bytes32[] calldata proposalNames) external {
@@ -96,6 +96,6 @@ contract Ballot {
       proposals[name][i] = Proposal({name: proposalNames[i], voteCount: 0});
     }
 
-    emit createBallot(name, proposalNames, msg.sender);
+    emit NewBallot(name, proposalNames, msg.sender);
   }
 }
