@@ -5,7 +5,7 @@ export async function deploy(
   args: DeployArgument<Params>,
   hre: HardhatRuntimeEnvironment,
 ) {
-  const { run, ethers, network } = hre;
+  const { run, ethers } = hre;
   const { name } = args;
 
   await run("compile");
