@@ -9,25 +9,29 @@ interface IMyToken {
 contract Ballot {
   struct Proposal {
     bytes32 name;
-    uint voteCount;
+    uint256 voteCount;
+  }
+
+  struct BallotMetadata {
+    bytes32 name;
+    address owner;
+    uint256 targetBlockNumber;
+    uint256 totalProposal;
   }
 
   IMyToken public tokenContract;
 
-  mapping(bytes32 => Proposal[]) public proposals;
+  mapping(bytes32 name => BallotMetadata) public ballotMetadas;
+  mapping(bytes32 name => mapping(uint256 index => Proposal proposal)) public proposals;
 
-  mapping(bytes32 => uint256) public targetBlockNumber;
-
-  mapping(address => uint256) public votingPowerSpent;
-
-  mapping(bytes32 => address) public owners;
+  mapping(address account => uint256 amount) public votingPowerSpent;
 
   constructor(address _tokenContract) {
     tokenContract = IMyToken(_tokenContract);
   }
 
-  function vote(bytes32 name, uint proposal, uint amount) external {
-    require(targetBlockNumber[name] > 0, "Ballot: target block number is not setted");
+  function vote(bytes32 name, uint256 proposal, uint amount) external {
+    require(proposal < ballotMetadas[name].totalProposal, "Ballot: proposal not exists");
     require(
         votingPower(name, msg.sender) >= amount,
         "Ballot: trying to vote more than allowed"
@@ -39,13 +43,13 @@ contract Ballot {
 
   function votingPower(bytes32 name, address account) public view returns(uint256) {
     return (
-      tokenContract.getPastVotes(account, targetBlockNumber[name]) - votingPowerSpent[account]
+      tokenContract.getPastVotes(account, ballotMetadas[name].targetBlockNumber) - votingPowerSpent[account]
     );
   }
 
   function winningProposal(bytes32 name) public view returns (int winningProposal_) {
     uint winningVoteCount = 0;
-    for (uint p = 0; p < proposals[name].length; p++) {
+    for (uint p = 0; p < ballotMetadas[name].totalProposal; p++) {
       if (proposals[name][p].voteCount >= winningVoteCount) {
         if (proposals[name][p].voteCount == winningVoteCount) {
           winningProposal_ = -1;
@@ -66,23 +70,22 @@ contract Ballot {
     }
   }
 
-  function totalProposal(bytes32 name) external view returns (uint count){
-    count = proposals[name].length;
-  }
-
   function setTargetBlockNumber(bytes32 name, uint256 _targetBlockNumber) external {
-    require(owners[name] == msg.sender, "Ballot: not the ballot owner");
-    targetBlockNumber[name] = _targetBlockNumber;
+    require(ballotMetadas[name].owner == msg.sender, "Ballot: not the ballot owner");
+    ballotMetadas[name].targetBlockNumber = _targetBlockNumber;
   }
 
   function newBallot(bytes32 name, bytes32[] calldata proposalNames) external {
-    require(proposals[name].length == 0, "Ballot: already existed");
+    require(ballotMetadas[name].owner == address(0), "Ballot: already existed");
     require(proposalNames.length > 1, "Ballot: at least 2 names is provided");  
 
-    owners[name] = msg.sender;
+    ballotMetadas[name].name = name;
+    ballotMetadas[name].owner = msg.sender;
+    ballotMetadas[name].targetBlockNumber = block.number - 1;
+    ballotMetadas[name].totalProposal = proposalNames.length;
 
     for (uint i = 0; i < proposalNames.length; i++) {
-      proposals[name].push(Proposal({name: proposalNames[i], voteCount: 0}));
+      proposals[name][i] = Proposal({name: proposalNames[i], voteCount: 0});
     }
   }
 }

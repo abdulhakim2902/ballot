@@ -8,65 +8,53 @@ export async function deploy(
   const { run, ethers, network } = hre;
   const { name } = args;
 
-  try {
-    await run("compile");
+  await run("compile");
 
-    const params = await getParams(hre, args);
+  const params = await getParams(hre, args);
 
-    const [deployer] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
 
-    console.log("\nNetwork:", network.name);
-    console.log("Deployer addr:", deployer.address);
-    console.log("Params:", params);
+  const factory = await ethers.getContractFactory(name, deployer);
 
-    const factory = await ethers.getContractFactory(name, deployer);
+  console.log("\nDeploying", name.toLowerCase(), "contract...");
 
-    console.log("\nDeploying", name.toLowerCase(), "contract...");
+  const contract = await factory.deploy(...params);
 
-    const contract = await factory.deploy(...params);
+  await contract.waitForDeployment();
 
-    await contract.waitForDeployment();
+  const contractAddress = await contract.getAddress();
 
-    const contractAddress = await contract.getAddress();
+  console.log(`Contract is deployed at ${contractAddress}.\n`);
 
-    console.log("Contract is deployed at", contractAddress);
+  const contractInfo = {
+    name: name,
+    address: contractAddress,
+    contract: contract,
+  };
 
-    const contractInfo = {
-      name: name,
-      address: contractAddress,
-      contract: contract,
-    };
-
-    return { contract: contractInfo, params };
-  } catch (err) {
-    console.log(err);
-  }
+  return { contract: contractInfo, params };
 }
 
 export async function deployAndVerify(
   args: DeployArgument<Params>,
   hre: HardhatRuntimeEnvironment,
 ) {
-  try {
-    const { run } = hre;
-    const { contract, params } = await run("deploy", args);
+  const { run } = hre;
+  const { contract, params } = await run("deploy", args);
 
-    console.log("Waiting for block confirmations...");
+  console.log("Waiting for block confirmations...");
 
-    await contract.contract?.deploymentTransaction()?.wait(5);
+  await contract.contract?.deploymentTransaction()?.wait(5);
 
-    console.log("Confirmed!\n");
+  console.log("Confirmed!\n");
 
-    console.log("Verifying", contract.name.toLowerCase(), "contract...");
+  console.log("Verifying", contract.name.toLowerCase(), "contract...");
 
-    await hre.run("verify:verify", {
-      address: contract.address,
-      contract: `contracts/${contract.name}.sol:${contract.name}`,
-      constructorArguments: params,
-    });
-  } catch (err) {
-    console.log(err);
-  }
+  await hre.run("verify:verify", {
+    address: contract.address,
+    contract: `contracts/${contract.name}.sol:${contract.name}`,
+    constructorArguments: params,
+  });
 }
 
 export async function getParams(

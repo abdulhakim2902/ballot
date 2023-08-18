@@ -79,13 +79,13 @@ describe("Ballot", async () => {
     });
 
     it("has 3 proposal names", async () => {
-      const total = await ballotContract.totalProposal(name);
-      expect(total).to.eq(PROPOSALS.length);
+      const metadatas = await ballotContract.ballotMetadas(name);
+      expect(metadatas.totalProposal.toString()).to.eq(PROPOSALS.length.toString());
     });
 
     it("sets the account0 address as the ballot owner", async () => {
-      const ballotOwner = await ballotContract.owners(name);
-      expect(ballotOwner).to.eq(account0.address);
+      const metadatas = await ballotContract.ballotMetadas(name);
+      expect(metadatas.owner).to.eq(account0.address);
     });
 
     it("can not create a new ballot with the same name", async () => {
@@ -114,8 +114,8 @@ describe("Ballot", async () => {
     });
 
     it("has the provided target block number", async () => {
-      const targetBlockNumber = await ballotContract.targetBlockNumber(name);
-      expect(targetBlockNumber).to.eq(10n);
+      const metadatas = await ballotContract.ballotMetadas(name);
+      expect(metadatas.targetBlockNumber).to.eq(10n);
     });
 
     it("sets the target block number for the existing ballot", async () => {
@@ -123,8 +123,8 @@ describe("Ballot", async () => {
       const connectedContract = ballotContract.connect(account0);
       await connectedContract.setTargetBlockNumber(name, blockNumber);
 
-      const targetBlockNumber = await ballotContract.targetBlockNumber(name);
-      expect(targetBlockNumber).to.eq(50n);
+      const metadatas = await ballotContract.ballotMetadas(name);
+      expect(metadatas.targetBlockNumber).to.eq(50n);
     });
 
     it("can not change the target block number for the ballot that is not owned", async () => {
@@ -183,19 +183,6 @@ describe("Ballot", async () => {
       const action = connectedContract.vote(name, index, amount);
       await expect(action).to.be.revertedWith(
         "Ballot: trying to vote more than allowed",
-      );
-    });
-
-    it("can not cast vote when the target block number is not setted", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
-      const amount = 2n * MINT_VALUE;
-
-      await mine(10);
-      await connectedContract.setTargetBlockNumber(name, 0);
-
-      const action = connectedContract.vote(name, index, amount);
-      await expect(action).to.be.revertedWith(
-        "Ballot: target block number is not setted",
       );
     });
   });

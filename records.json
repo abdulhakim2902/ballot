@@ -1,0 +1,229 @@
+{
+  "network": "hardhat",
+  "receipts": [
+    {
+      "name": "mint",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "amount": "1000000000000000000"
+      },
+      "status": "SUCCESS",
+      "hash": "0xc939cff5d074b4f28b6184f9a85d9c5a1a05c2d1f50f48f9f2a3390eb16e99e6",
+      "blockNumber": 2,
+      "explorerURL": ""
+    },
+    {
+      "name": "mint",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "amount": "1000000000000000000"
+      },
+      "status": "SUCCESS",
+      "hash": "0x845d8991776a49243c72d246d2adfcc24527a0e62e098329729a8aef7cde8ddd",
+      "blockNumber": 3,
+      "explorerURL": ""
+    },
+    {
+      "name": "mint",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "amount": "1000000000000000000"
+      },
+      "status": "SUCCESS",
+      "hash": "0x26938e9e54b6d1d84cbff895d263d173abeff9c9c04b5d077dd433f92e5c33b2",
+      "blockNumber": 4,
+      "explorerURL": ""
+    },
+    {
+      "name": "delegate",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      },
+      "status": "SUCCESS",
+      "hash": "0x3b9e3df88ca33172619896eca4011d8dd4607dc2c4a76156197ee9ead962498f",
+      "blockNumber": 5,
+      "explorerURL": ""
+    },
+    {
+      "name": "delegate",
+      "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"
+      },
+      "status": "SUCCESS",
+      "hash": "0xb9723f701b9768c69675f9c6706b1e65e73011ddb93db6c9d31c21af3606865f",
+      "blockNumber": 6,
+      "explorerURL": ""
+    },
+    {
+      "name": "delegate",
+      "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+      },
+      "status": "SUCCESS",
+      "hash": "0xaf1406b6268c13fac2f34dd25bb8f5ec3de1c7e79b7a916b245be9dc46ab75e2",
+      "blockNumber": 7,
+      "explorerURL": ""
+    },
+    {
+      "name": "delegate",
+      "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "to": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "params": {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+      },
+      "status": "SUCCESS",
+      "hash": "0x713b1be2ece1e0941731746b6b39471deb9dbfb66fd3dcf7ae0ca587daa8e86a",
+      "blockNumber": 8,
+      "explorerURL": ""
+    },
+    {
+      "name": "newBallot",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "proposals": [
+          "CAT",
+          "FISH",
+          "DOG"
+        ]
+      },
+      "status": "SUCCESS",
+      "hash": "0x04260229c9f7eb0958952017f38a813646201cee4ec6a5a2590019e3176681b3",
+      "blockNumber": 10,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "331000000000000000",
+        "proposal": {
+          "name": "CAT",
+          "index": "0"
+        }
+      },
+      "status": "SUCCESS",
+      "hash": "0x2796478b449d38e0f64e76ac5d0f3c19d47970f50dd34d3b0e18bf2cb1bdb53e",
+      "blockNumber": 11,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "426000000000000000",
+        "proposal": {
+          "name": "FISH",
+          "index": "1"
+        }
+      },
+      "status": "SUCCESS",
+      "hash": "0x116a947eec591010aa71f7eda267714486de4b049094907f7f88cb822d766e92",
+      "blockNumber": 12,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "275000000000000000",
+        "proposal": {
+          "name": "DOG",
+          "index": "2"
+        }
+      },
+      "status": "FAILED",
+      "reason": "VM Exception while processing transaction: reverted with reason string 'Ballot: trying to vote more than allowed'"
+    },
+    {
+      "name": "vote",
+      "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "666666666666666666",
+        "proposal": {
+          "name": "CAT",
+          "index": "0"
+        }
+      },
+      "status": "SUCCESS",
+      "hash": "0x551a8775b16038259c370b5473550d1c0145cf0b2eb3232ccff5b4e2fcaf7240",
+      "blockNumber": 14,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "666666666666666666",
+        "proposal": {
+          "name": "FISH",
+          "index": "1"
+        }
+      },
+      "status": "SUCCESS",
+      "hash": "0x56903b51d5469b67e8b0f96384c4d158ddcf868ededa697c6f64e213fb003481",
+      "blockNumber": 15,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "666666666666666666",
+        "proposal": {
+          "name": "DOG",
+          "index": "2"
+        }
+      },
+      "status": "SUCCESS",
+      "hash": "0xcf5cd4601e8357c6f91b87d8cda918299d7b49b16aa4e5a13c5264d52b91ccbc",
+      "blockNumber": 16,
+      "explorerURL": ""
+    },
+    {
+      "name": "vote",
+      "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "params": {
+        "name": "ANIMAL",
+        "amount": "1000000000000000000",
+        "proposal": {
+          "name": "FISH",
+          "index": "1"
+        }
+      },
+      "status": "FAILED",
+      "reason": "VM Exception while processing transaction: reverted with reason string 'Ballot: trying to vote more than allowed'"
+    }
+  ],
+  "winner": {
+    "name": "FISH",
+    "index": "1",
+    "totalVote": "1092666666666666666"
+  }
+}

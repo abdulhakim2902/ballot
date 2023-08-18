@@ -3,8 +3,13 @@ import { accounts } from "../scripts/accounts";
 import { deploy, deployAndVerify } from "../scripts/deploy";
 import { ethers } from "ethers";
 import { delegate, mint } from "../scripts/token";
+import { records } from "../scripts/records";
 
 const ZeroAddress = ethers.ZeroAddress;
+
+task("records", "Running a complete tokenized ballot system").setAction(
+  records,
+);
 
 task("accounts", "Get list of avalaible accounts").setAction(accounts);
 
