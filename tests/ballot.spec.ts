@@ -80,7 +80,9 @@ describe("Ballot", async () => {
 
     it("has 3 proposal names", async () => {
       const metadatas = await ballotContract.ballotMetadas(name);
-      expect(metadatas.totalProposal.toString()).to.eq(PROPOSALS.length.toString());
+      expect(metadatas.totalProposal.toString()).to.eq(
+        PROPOSALS.length.toString(),
+      );
     });
 
     it("sets the account0 address as the ballot owner", async () => {

@@ -25,16 +25,20 @@ export interface DelegateArgument extends Contract, Recipient {}
 
 export interface NewBallotArguments extends Contract {
   name: string;
-  proposals: string[];
+  proposals: string;
 }
 
 export interface VoteArguments extends Contract {
   name: string;
   amount: string;
-  proposalIndex: string;
+  proposal: string;
 }
 
 export interface VotingPowerArgument extends Contract, Recipient {
+  name: string;
+}
+
+export interface WinningProposalArgument extends Contract {
   name: string;
 }
 

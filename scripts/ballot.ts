@@ -5,6 +5,7 @@ import {
   Status,
   VoteArguments,
   VotingPowerArgument,
+  WinningProposalArgument,
 } from "./types";
 import { getExplorerURL } from "../utils/explorer-url";
 
@@ -13,13 +14,15 @@ export async function newBallot(
   hre: HardhatRuntimeEnvironment,
 ) {
   const { ethers, network } = hre;
+
+  const argProposals = args.proposals.split(",");
   const receipt: Receipt = {
     name: "newBallot",
     from: args.signer,
     to: args.contract,
     params: {
       name: args.name,
-      proposals: args.proposals,
+      proposals: argProposals,
     },
     status: Status.SUCCESS,
   };
@@ -33,10 +36,10 @@ export async function newBallot(
 
     console.log("Creating new ballot...");
     console.log("Name:", args.name);
-    console.log(`Proposals: ${args.proposals}`);
+    console.log(`Proposals: ${argProposals}`);
 
     const name = ethers.encodeBytes32String(args.name);
-    const proposals = args.proposals.map((e) => ethers.encodeBytes32String(e));
+    const proposals = argProposals.map((e) => ethers.encodeBytes32String(e));
 
     const contract = await ethers.getContractAt("Ballot", args.contract);
     const connectedContract = contract.connect(signer);
@@ -83,12 +86,12 @@ export async function vote(
 
     const name = ethers.encodeBytes32String(args.name);
     const contract = await ethers.getContractAt("Ballot", args.contract);
-    const proposal = await contract.proposals(name, args.proposalIndex);
+    const proposal = await contract.proposals(name, args.proposal);
     const proposalName = ethers.decodeBytes32String(proposal.name);
 
     receipt.params.proposal = {
       name: proposalName,
-      index: args.proposalIndex,
+      index: args.proposal,
     };
 
     const vp = await contract.votingPower(name, signer.address);
@@ -97,7 +100,7 @@ export async function vote(
 
     const res = await contract
       .connect(signer)
-      .vote(name, args.proposalIndex, args.amount);
+      .vote(name, args.proposal, args.amount);
     const txn = await res.wait(1);
     if (!txn) throw new Error("Error");
     const explorer = getExplorerURL(network, txn);
@@ -130,7 +133,7 @@ export async function votingPower(
 }
 
 export async function winningProposal(
-  args: any,
+  args: WinningProposalArgument,
   hre: HardhatRuntimeEnvironment,
 ) {
   const { ethers } = hre;
@@ -147,7 +150,7 @@ export async function winningProposal(
     };
   }
 
-  console.log("Winner:",ethers.decodeBytes32String(proposal.name));
+  console.log("Winner:", ethers.decodeBytes32String(proposal.name));
   console.log("Total Vote:", proposal.voteCount.toString());
 
   return {

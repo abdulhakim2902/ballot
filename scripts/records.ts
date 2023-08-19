@@ -98,7 +98,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
       signer: deployer.address,
       contract: ballotContractAddress,
       name: GROUPID,
-      proposals: PROPOSALS,
+      proposals: PROPOSALS.join(","),
     },
     hre,
   );
@@ -124,7 +124,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
         name: GROUPID,
         contract: ballotContractAddress,
         amount: amount.toString(),
-        proposalIndex: i.toString(),
+        proposal: i.toString(),
       },
       hre,
     );
@@ -145,7 +145,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
           name: GROUPID,
           contract: ballotContractAddress,
           amount: amount.toString(),
-          proposalIndex: i.toString(),
+          proposal: i.toString(),
         },
         hre,
       );
@@ -163,7 +163,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
         name: GROUPID,
         contract: ballotContractAddress,
         amount: MINT_VALUE.toString(),
-        proposalIndex: idx.toString(),
+        proposal: idx.toString(),
       },
       hre,
     );
@@ -173,7 +173,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
 
   RECORD.receipts = RECEIPTS;
   RECORD.winner = await winningProposal(
-    { name: GROUPID, contract: ballotContractAddress },
+    { name: GROUPID, contract: ballotContractAddress, signer: "" },
     hre,
   );
 
