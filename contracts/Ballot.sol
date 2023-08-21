@@ -21,81 +21,87 @@ contract Ballot {
 
   IMyToken public tokenContract;
 
-  mapping(bytes32 name => BallotMetadata) public ballotMetadas;
-  mapping(bytes32 name => mapping(uint256 index => Proposal proposal)) public proposals;
+  uint256 public totalBallots;
+
+  mapping(bytes32 name => bool) private status;
+  mapping(uint256 index => BallotMetadata) public ballotMetadas;
+  mapping(uint256 ballotIndex => mapping(uint256 proposalIndex => Proposal proposal)) public proposals;
 
   mapping(address account => uint256 amount) public votingPowerSpent;
 
-  event Vote(address voter, uint256 proposal, uint256 amount, bytes32 name);
-  event NewBallot(bytes32 name, bytes32[] proposals, address owner);
-  event UpdateTargetBlockNumber(bytes32 name, uint256 oldTargetBlockNumber, uint256 newTargetBlockNumber);
+  event Vote(uint256 ballot, uint256 proposal, address voter, uint256 amount);
+  event NewBallot(uint256 ballot, bytes32 name, address owner);
+  event UpdateTargetBlockNumber(uint256 ballot, uint256 oldTargetBlockNumber, uint256 newTargetBlockNumber);
 
   constructor(address _tokenContract) {
     tokenContract = IMyToken(_tokenContract);
   }
 
-  function vote(bytes32 name, uint256 proposal, uint256 amount) external {
-    require(proposal < ballotMetadas[name].totalProposal, "Ballot: proposal not exists");
+  function vote(uint256 ballot, uint256 proposal, uint256 amount) external {
+    require(proposal < ballotMetadas[ballot].totalProposal, "Ballot: proposal not exists");
     require(
-        votingPower(name, msg.sender) >= amount,
+        votingPower(ballot, msg.sender) >= amount,
         "Ballot: trying to vote more than allowed"
     );
 
     votingPowerSpent[msg.sender] += amount;
-    proposals[name][proposal].voteCount += amount;
+    proposals[ballot][proposal].voteCount += amount;
 
-    emit Vote(msg.sender, proposal, amount, name);
+    emit Vote(ballot, proposal, msg.sender, amount);
   }
 
-  function votingPower(bytes32 name, address account) public view returns(uint256) {
+  function votingPower(uint256 ballot, address account) public view returns(uint256) {
     return (
-      tokenContract.getPastVotes(account, ballotMetadas[name].targetBlockNumber) - votingPowerSpent[account]
+      tokenContract.getPastVotes(account, ballotMetadas[ballot].targetBlockNumber) - votingPowerSpent[account]
     );
   }
 
-  function winningProposal(bytes32 name) public view returns (int winningProposal_) {
+  function winningProposal(uint256 ballot) public view returns (int winningProposal_) {
     uint winningVoteCount = 0;
-    for (uint p = 0; p < ballotMetadas[name].totalProposal; p++) {
-      if (proposals[name][p].voteCount >= winningVoteCount) {
-        if (proposals[name][p].voteCount == winningVoteCount) {
+    for (uint p = 0; p < ballotMetadas[ballot].totalProposal; p++) {
+      if (proposals[ballot][p].voteCount >= winningVoteCount) {
+        if (proposals[ballot][p].voteCount == winningVoteCount) {
           winningProposal_ = -1;
         } else {
-          winningVoteCount = proposals[name][p].voteCount;
+          winningVoteCount = proposals[ballot][p].voteCount;
           winningProposal_ = int(p);
         }
       }
     }
   }
 
-  function winnerName(bytes32 name) external view returns (bytes32 winnerName_) {
-    int winningProposal_ = winningProposal(name);
+  function winnerName(uint256 ballot) external view returns (bytes32 winnerName_) {
+    int winningProposal_ = winningProposal(ballot);
     if (winningProposal_ < 0) {
       winnerName_ = "none";
     } else {
-      winnerName_ = proposals[name][uint(winningProposal_)].name;
+      winnerName_ = proposals[ballot][uint(winningProposal_)].name;
     }
   }
 
-  function setTargetBlockNumber(bytes32 name, uint256 _targetBlockNumber) external {
-    require(ballotMetadas[name].owner == msg.sender, "Ballot: not the ballot owner");
-    uint256 oldTargetBlockNumber = ballotMetadas[name].targetBlockNumber;
-    ballotMetadas[name].targetBlockNumber = _targetBlockNumber;
-    emit UpdateTargetBlockNumber(name, oldTargetBlockNumber, _targetBlockNumber);
+  function setTargetBlockNumber(uint256 ballot, uint256 _targetBlockNumber) external {
+    require(ballotMetadas[ballot].owner == msg.sender, "Ballot: not the ballot owner");
+    uint256 oldTargetBlockNumber = ballotMetadas[ballot].targetBlockNumber;
+    ballotMetadas[ballot].targetBlockNumber = _targetBlockNumber;
+    emit UpdateTargetBlockNumber(ballot, oldTargetBlockNumber, _targetBlockNumber);
   }
 
   function newBallot(bytes32 name, bytes32[] calldata proposalNames) external {
-    require(ballotMetadas[name].owner == address(0), "Ballot: already existed");
+    require(!status[name], "Ballot: already existed");
     require(proposalNames.length > 1, "Ballot: at least 2 names is provided");  
 
-    ballotMetadas[name].name = name;
-    ballotMetadas[name].owner = msg.sender;
-    ballotMetadas[name].targetBlockNumber = block.number - 1;
-    ballotMetadas[name].totalProposal = proposalNames.length;
+    ballotMetadas[totalBallots].name = name;
+    ballotMetadas[totalBallots].owner = msg.sender;
+    ballotMetadas[totalBallots].targetBlockNumber = block.number - 1;
+    ballotMetadas[totalBallots].totalProposal = proposalNames.length;
 
     for (uint i = 0; i < proposalNames.length; i++) {
-      proposals[name][i] = Proposal({name: proposalNames[i], voteCount: 0});
+      proposals[totalBallots][i] = Proposal({name: proposalNames[i], voteCount: 0});
     }
 
-    emit NewBallot(name, proposalNames, msg.sender);
+    emit NewBallot(totalBallots, name, msg.sender);
+
+    totalBallots += 1;
+    status[name] = true;
   }
 }

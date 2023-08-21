@@ -1,5 +1,6 @@
 {
   "network": "hardhat",
+  "ballot": "ANIMAL",
   "receipts": [
     {
       "name": "mint",
@@ -101,7 +102,7 @@
         ]
       },
       "status": "SUCCESS",
-      "hash": "0x04260229c9f7eb0958952017f38a813646201cee4ec6a5a2590019e3176681b3",
+      "hash": "0x39daa6bf05bde81f53d295d29ff35bff20af305499a688617f6c866240b9f943",
       "blockNumber": 10,
       "explorerURL": ""
     },
@@ -110,15 +111,15 @@
       "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
-        "amount": "331000000000000000",
+        "name": "",
+        "amount": "188000000000000000",
         "proposal": {
           "name": "CAT",
           "index": "0"
         }
       },
       "status": "SUCCESS",
-      "hash": "0x2796478b449d38e0f64e76ac5d0f3c19d47970f50dd34d3b0e18bf2cb1bdb53e",
+      "hash": "0x91fe0dfee0e5637230c9d28687b62923715248f2ba70dfc5e6a638edb1aa8532",
       "blockNumber": 11,
       "explorerURL": ""
     },
@@ -127,15 +128,15 @@
       "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
-        "amount": "426000000000000000",
+        "name": "",
+        "amount": "28000000000000000",
         "proposal": {
           "name": "FISH",
           "index": "1"
         }
       },
       "status": "SUCCESS",
-      "hash": "0x116a947eec591010aa71f7eda267714486de4b049094907f7f88cb822d766e92",
+      "hash": "0x65e34b200841af8375ecb9ee1e7cdfe581dda947a29163450b76944b9eaba00d",
       "blockNumber": 12,
       "explorerURL": ""
     },
@@ -144,22 +145,24 @@
       "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
-        "amount": "275000000000000000",
+        "name": "",
+        "amount": "285000000000000000",
         "proposal": {
           "name": "DOG",
           "index": "2"
         }
       },
-      "status": "FAILED",
-      "reason": "VM Exception while processing transaction: reverted with reason string 'Ballot: trying to vote more than allowed'"
+      "status": "SUCCESS",
+      "hash": "0xdfb206d92737c1e83314d51da722dd230043d9bd77591900983a779bbe4453f4",
+      "blockNumber": 13,
+      "explorerURL": ""
     },
     {
       "name": "vote",
       "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
+        "name": "",
         "amount": "666666666666666666",
         "proposal": {
           "name": "CAT",
@@ -167,7 +170,7 @@
         }
       },
       "status": "SUCCESS",
-      "hash": "0x551a8775b16038259c370b5473550d1c0145cf0b2eb3232ccff5b4e2fcaf7240",
+      "hash": "0x864422cf51ff1c77c230f50452ed6bf64143e2ed8a123728e3264b43ff2693e2",
       "blockNumber": 14,
       "explorerURL": ""
     },
@@ -176,7 +179,7 @@
       "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
+        "name": "",
         "amount": "666666666666666666",
         "proposal": {
           "name": "FISH",
@@ -184,7 +187,7 @@
         }
       },
       "status": "SUCCESS",
-      "hash": "0x56903b51d5469b67e8b0f96384c4d158ddcf868ededa697c6f64e213fb003481",
+      "hash": "0xfd477a073945a2879b87ba62cfd9e1735d75fbf4a3eb3ae28d55abdaab5bac6a",
       "blockNumber": 15,
       "explorerURL": ""
     },
@@ -193,7 +196,7 @@
       "from": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
+        "name": "",
         "amount": "666666666666666666",
         "proposal": {
           "name": "DOG",
@@ -201,7 +204,7 @@
         }
       },
       "status": "SUCCESS",
-      "hash": "0xcf5cd4601e8357c6f91b87d8cda918299d7b49b16aa4e5a13c5264d52b91ccbc",
+      "hash": "0x3eab66bb673fb5a5be1416dcf9f59e13200096f096eeca8153d26c32bf70b22c",
       "blockNumber": 16,
       "explorerURL": ""
     },
@@ -210,11 +213,11 @@
       "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
       "to": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
       "params": {
-        "name": "ANIMAL",
+        "name": "",
         "amount": "1000000000000000000",
         "proposal": {
-          "name": "FISH",
-          "index": "1"
+          "name": "CAT",
+          "index": "0"
         }
       },
       "status": "FAILED",
@@ -222,8 +225,8 @@
     }
   ],
   "winner": {
-    "name": "FISH",
-    "index": "1",
-    "totalVote": "1092666666666666666"
+    "name": "DOG",
+    "index": "2",
+    "totalVote": "951666666666666666"
   }
 }

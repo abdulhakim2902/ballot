@@ -73,7 +73,7 @@ export async function vote(
     from: args.signer ?? "",
     to: args.contract,
     params: {
-      name: args.name,
+      name: "",
       amount: args.amount,
     },
     status: Status.SUCCESS,
@@ -84,9 +84,8 @@ export async function vote(
     const account = accounts.find((e) => e.address === args.signer);
     const signer = account ?? accounts[0];
 
-    const name = ethers.encodeBytes32String(args.name);
     const contract = await ethers.getContractAt("Ballot", args.contract);
-    const proposal = await contract.proposals(name, args.proposal);
+    const proposal = await contract.proposals(args.ballot, args.proposal);
     const proposalName = ethers.decodeBytes32String(proposal.name);
 
     receipt.params.proposal = {
@@ -94,13 +93,13 @@ export async function vote(
       index: args.proposal,
     };
 
-    const vp = await contract.votingPower(name, signer.address);
+    const vp = await contract.votingPower(args.ballot, signer.address);
     console.log(`Voter: ${signer.address}`);
     console.log(`Voting Power: ${vp.toString()}`);
 
     const res = await contract
       .connect(signer)
-      .vote(name, args.proposal, args.amount);
+      .vote(args.ballot, args.proposal, args.amount);
     const txn = await res.wait(1);
     if (!txn) throw new Error("Error");
     const explorer = getExplorerURL(network, txn);
@@ -125,9 +124,8 @@ export async function votingPower(
 ) {
   const { ethers } = hre;
 
-  const name = ethers.encodeBytes32String(args.name);
   const contract = await ethers.getContractAt("Ballot", args.contract);
-  const amount = await contract.votingPower(name, args.address);
+  const amount = await contract.votingPower(args.ballot, args.address);
   console.log("Voting power:", amount.toString());
   return amount;
 }
@@ -138,10 +136,9 @@ export async function winningProposal(
 ) {
   const { ethers } = hre;
 
-  const name = ethers.encodeBytes32String(args.name);
   const contract = await ethers.getContractAt("Ballot", args.contract);
-  const winningProposal = await contract.winningProposal(name);
-  const proposal = await contract.proposals(name, winningProposal);
+  const winningProposal = await contract.winningProposal(args.ballot);
+  const proposal = await contract.proposals(args.ballot, winningProposal);
   if (proposal.voteCount <= 0n) {
     return {
       name: "none",

@@ -49,18 +49,18 @@ task("new-ballot", "Create new ballot")
 task("vote", "Voting proposal")
   .addOptionalParam("signer", "Signer address", ZeroAddress, types.string)
   .addOptionalParam("contract", "contract address", ZeroAddress, types.string)
-  .addOptionalParam("name", "ballot group name", "animal", types.string)
+  .addOptionalParam("ballot", "ballot index", "0", types.string)
   .addOptionalParam("proposal", "proposal index", "0", types.string)
   .addOptionalParam("amount", "vote amount", "0", types.string)
   .setAction(vote);
 
 task("voting-power", "Account voting power")
   .addOptionalParam("contract", "contract address", ZeroAddress, types.string)
-  .addOptionalParam("name", "ballot group name", "animal", types.string)
+  .addOptionalParam("ballot", "ballot index", "0", types.string)
   .addOptionalParam("address", "account address", ZeroAddress, types.string)
   .setAction(votingPower);
 
 task("winning-proposal", "Winning proposal")
   .addOptionalParam("contract", "contract address", ZeroAddress, types.string)
-  .addOptionalParam("name", "ballot group name", "animal", types.string)
+  .addOptionalParam("index", "ballot index", "0", types.string)
   .setAction(winningProposal);

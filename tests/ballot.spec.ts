@@ -52,6 +52,7 @@ describe("Ballot", async () => {
 
   describe("when the new Ballot is created", async () => {
     let name: string;
+    let index: bigint;
     let proposals: string[];
     let connectedContract: Ballot;
 
@@ -59,13 +60,14 @@ describe("Ballot", async () => {
       name = ethers.encodeBytes32String(NAME);
       proposals = PROPOSALS.map((e) => ethers.encodeBytes32String(e));
       connectedContract = ballotContract.connect(account0);
+      index = await connectedContract.totalBallots();
 
       await connectedContract.newBallot(name, proposals);
     });
 
     it("has the provided proposals", async () => {
       for (let i = 0; i < proposals.length; i++) {
-        const proposal = await ballotContract.proposals(name, i);
+        const proposal = await ballotContract.proposals(index, i);
         const decodedName = ethers.decodeBytes32String(proposal.name);
         expect(decodedName).to.eq(PROPOSALS[i]);
       }
@@ -79,14 +81,14 @@ describe("Ballot", async () => {
     });
 
     it("has 3 proposal names", async () => {
-      const metadatas = await ballotContract.ballotMetadas(name);
+      const metadatas = await ballotContract.ballotMetadas(index);
       expect(metadatas.totalProposal.toString()).to.eq(
         PROPOSALS.length.toString(),
       );
     });
 
     it("sets the account0 address as the ballot owner", async () => {
-      const metadatas = await ballotContract.ballotMetadas(name);
+      const metadatas = await ballotContract.ballotMetadas(index);
       expect(metadatas.owner).to.eq(account0.address);
     });
 
@@ -106,33 +108,35 @@ describe("Ballot", async () => {
 
   describe("when the target block number is setted", async () => {
     let name: string;
+    let index: bigint;
 
     beforeEach(async () => {
       name = ethers.encodeBytes32String(NAME);
+      index = await ballotContract.totalBallots();
 
       const proposals = PROPOSALS.map((e) => ethers.encodeBytes32String(e));
       await ballotContract.connect(account0).newBallot(name, proposals);
-      await ballotContract.connect(account0).setTargetBlockNumber(name, 10);
+      await ballotContract.connect(account0).setTargetBlockNumber(index, 10);
     });
 
     it("has the provided target block number", async () => {
-      const metadatas = await ballotContract.ballotMetadas(name);
+      const metadatas = await ballotContract.ballotMetadas(index);
       expect(metadatas.targetBlockNumber).to.eq(10n);
     });
 
     it("sets the target block number for the existing ballot", async () => {
       const blockNumber = 50;
       const connectedContract = ballotContract.connect(account0);
-      await connectedContract.setTargetBlockNumber(name, blockNumber);
+      await connectedContract.setTargetBlockNumber(index, blockNumber);
 
-      const metadatas = await ballotContract.ballotMetadas(name);
+      const metadatas = await ballotContract.ballotMetadas(index);
       expect(metadatas.targetBlockNumber).to.eq(50n);
     });
 
     it("can not change the target block number for the ballot that is not owned", async () => {
       const blockNumber = 50;
       const connectedContract = ballotContract.connect(account1);
-      const action = connectedContract.setTargetBlockNumber(name, blockNumber);
+      const action = connectedContract.setTargetBlockNumber(index, blockNumber);
 
       await expect(action).to.be.revertedWith("Ballot: not the ballot owner");
     });
@@ -140,6 +144,7 @@ describe("Ballot", async () => {
 
   describe("when the voter interact with the vote function in the contract", async () => {
     let name: string;
+    let index: bigint;
     let blockNumber: bigint;
     let proposals: string[];
     let connectedContract: Ballot;
@@ -149,40 +154,41 @@ describe("Ballot", async () => {
       blockNumber = ethers.toBigInt(10);
       proposals = PROPOSALS.map((e) => ethers.encodeBytes32String(e));
       connectedContract = ballotContract.connect(account0);
+      index = await ballotContract.totalBallots();
 
       await connectedContract.newBallot(name, proposals);
-      await connectedContract.setTargetBlockNumber(name, blockNumber);
+      await connectedContract.setTargetBlockNumber(index, blockNumber);
       await tokenContract.connect(account0).mint(account0, MINT_VALUE);
       await tokenContract.connect(account0).delegate(account0);
     });
 
     it("should register the vote", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
+      const proposalIdx = Math.floor(Math.random() * PROPOSALS.length);
       const amount = MINT_VALUE / BigInt(Math.floor(Math.random() * 10) + 1);
 
       await mine(10);
 
-      const bVotingPower = await ballotContract.votingPower(name, account0);
-      await connectedContract.vote(name, index, amount);
-      const aVotingPower = await ballotContract.votingPower(name, account0);
+      const bVotingPower = await ballotContract.votingPower(index, account0);
+      await connectedContract.vote(index, proposalIdx, amount);
+      const aVotingPower = await ballotContract.votingPower(index, account0);
       expect(bVotingPower - aVotingPower).to.eq(amount);
 
       const votingPowerSpent = await ballotContract.votingPowerSpent(account0);
       expect(votingPowerSpent).to.eq(amount);
 
-      const proposal = await ballotContract.proposals(name, index);
+      const proposal = await ballotContract.proposals(index, proposalIdx);
       const decodedName = ethers.decodeBytes32String(proposal.name);
-      expect(decodedName).to.eq(PROPOSALS[index]);
+      expect(decodedName).to.eq(PROPOSALS[proposalIdx]);
       expect(proposal.voteCount).to.eq(amount);
     });
 
     it("can not cast vote when the voter voting power is insufficient", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
+      const proposalIdx = Math.floor(Math.random() * PROPOSALS.length);
       const amount = 2n * MINT_VALUE;
 
       await mine(10);
 
-      const action = connectedContract.vote(name, index, amount);
+      const action = connectedContract.vote(index, proposalIdx, amount);
       await expect(action).to.be.revertedWith(
         "Ballot: trying to vote more than allowed",
       );
@@ -191,6 +197,7 @@ describe("Ballot", async () => {
 
   describe("when the voter delegate to the other voter", async () => {
     let name: string;
+    let index: bigint;
     let blockNumber: bigint;
     let proposals: string[];
     let connectedContract: Ballot;
@@ -200,40 +207,42 @@ describe("Ballot", async () => {
       blockNumber = ethers.toBigInt(10);
       proposals = PROPOSALS.map((e) => ethers.encodeBytes32String(e));
       connectedContract = ballotContract.connect(account2);
+      index = await ballotContract.totalBallots();
 
       await connectedContract.newBallot(name, proposals);
-      await connectedContract.setTargetBlockNumber(name, blockNumber);
+      await connectedContract.setTargetBlockNumber(index, blockNumber);
       await tokenContract.connect(account0).mint(account0, MINT_VALUE);
       await tokenContract.connect(account0).delegate(account0);
       await tokenContract.connect(account0).delegate(account2);
     });
 
     it("should register the vote by the delegator", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
+      const proposalIdx = Math.floor(Math.random() * PROPOSALS.length);
       const amount = MINT_VALUE / BigInt(Math.floor(Math.random() * 10) + 1);
 
       await mine(10);
 
-      const votingPower = await ballotContract.votingPower(name, account0);
+      const votingPower = await ballotContract.votingPower(index, account0);
       expect(votingPower).to.eq(0n);
 
-      const bVotingPower = await ballotContract.votingPower(name, account2);
-      await connectedContract.vote(name, index, amount);
-      const aVotingPower = await ballotContract.votingPower(name, account2);
+      const bVotingPower = await ballotContract.votingPower(index, account2);
+      await connectedContract.vote(index, proposalIdx, amount);
+      const aVotingPower = await ballotContract.votingPower(index, account2);
       expect(bVotingPower - aVotingPower).to.eq(amount);
 
       const votingPowerSpent = await ballotContract.votingPowerSpent(account2);
       expect(votingPowerSpent).to.eq(amount);
 
-      const proposal = await ballotContract.proposals(name, index);
+      const proposal = await ballotContract.proposals(index, proposalIdx);
       const decodedName = ethers.decodeBytes32String(proposal.name);
-      expect(decodedName).to.eq(PROPOSALS[index]);
+      expect(decodedName).to.eq(PROPOSALS[proposalIdx]);
       expect(proposal.voteCount).to.eq(amount);
     });
   });
 
   describe("when someone interact with the winningProposal function", async () => {
     let name: string;
+    let index: bigint;
     let blockNumber: bigint;
     let proposals: string[];
     let connectedContract: Ballot;
@@ -243,43 +252,44 @@ describe("Ballot", async () => {
       blockNumber = ethers.toBigInt(10);
       proposals = PROPOSALS.map((e) => ethers.encodeBytes32String(e));
       connectedContract = ballotContract.connect(account0);
+      index = await ballotContract.totalBallots();
 
       await connectedContract.newBallot(name, proposals);
-      await connectedContract.setTargetBlockNumber(name, blockNumber);
+      await connectedContract.setTargetBlockNumber(index, blockNumber);
       await tokenContract.connect(account0).mint(account0, MINT_VALUE);
       await tokenContract.connect(account0).delegate(account0);
     });
 
     it("should return -1 when no winner", async () => {
-      const winningProposal = await ballotContract.winningProposal(name);
+      const winningProposal = await ballotContract.winningProposal(index);
       expect(winningProposal).to.eq(-1n);
     });
 
     it("should return none when no winner", async () => {
-      const winnerName = await ballotContract.winnerName(name);
+      const winnerName = await ballotContract.winnerName(index);
       const decodedName = ethers.decodeBytes32String(winnerName);
       expect(decodedName).to.eq("none");
     });
 
     it("should return proposal index when there is a winner", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
+      const proposalIdx = Math.floor(Math.random() * PROPOSALS.length);
 
       await mine(10);
-      await connectedContract.vote(name, index, MINT_VALUE);
+      await connectedContract.vote(index, proposalIdx, MINT_VALUE);
 
       const winningProposal = await ballotContract.winningProposal(name);
-      expect(winningProposal).to.eq(index);
+      expect(winningProposal).to.eq(proposalIdx);
     });
 
     it("should return winner name when there is a winner", async () => {
-      const index = Math.floor(Math.random() * PROPOSALS.length);
+      const proposalIdx = Math.floor(Math.random() * PROPOSALS.length);
 
       await mine(10);
-      await connectedContract.vote(name, index, MINT_VALUE);
+      await connectedContract.vote(index, proposalIdx, MINT_VALUE);
 
-      const winnerName = await ballotContract.winnerName(name);
+      const winnerName = await ballotContract.winnerName(index);
       const decodedName = ethers.decodeBytes32String(winnerName);
-      expect(decodedName).to.eq(PROPOSALS[index]);
+      expect(decodedName).to.eq(PROPOSALS[proposalIdx]);
     });
   });
 });

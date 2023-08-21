@@ -7,12 +7,15 @@ import { delegate, mint } from "./token";
 import { Receipt } from "./types";
 import { deploy } from "./deploy";
 import { newBallot, vote, winningProposal } from "./ballot";
+
 const GROUPID = "ANIMAL";
+const BALLOT = 0;
 const PROPOSALS = ["CAT", "FISH", "DOG"];
 const MINT_VALUE = ethers.parseUnits("1");
 const RECEIPTS: Receipt[] = [];
 const RECORD = {
   network: "localhost",
+  ballot: GROUPID,
   receipts: RECEIPTS,
   winner: { name: "none", index: "-1", totalVote: "0" },
 };
@@ -30,10 +33,6 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
   console.log(`Deployer: ${deployer.address}`);
   console.log(`Account1: ${account1?.address}`);
   console.log(`Account2: ${account2?.address}\n`);
-
-  // Explorer URL
-  const baseURL = `https://${network.name}.etherscan.io/tx`;
-  const isLocal = network.name === "localhost" || network.name === "hardhat";
 
   RECORD.network = network.name;
 
@@ -107,7 +106,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
 
   // Parameter
   const name = ethers.encodeBytes32String(GROUPID);
-  const vp = await ballotContract.votingPower(name, deployer.address);
+  const vp = await ballotContract.votingPower(BALLOT, deployer.address);
 
   // Vote more than 1 proposal by deployer (FIXED AMOUNT)
   let remaining = 1000n;
@@ -121,7 +120,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
     const receipt = await vote(
       {
         signer: deployer.address,
-        name: GROUPID,
+        ballot: BALLOT,
         contract: ballotContractAddress,
         amount: amount.toString(),
         proposal: i.toString(),
@@ -134,7 +133,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
 
   // Vote more than 1 proposal by account 2 (FIXED AMOUNT)
   if (accounts.length == 3) {
-    const vp = await ballotContract.votingPower(name, account2.address);
+    const vp = await ballotContract.votingPower(BALLOT, account2.address);
     const total = BigInt(PROPOSALS.length);
     const amount = vp / total;
 
@@ -142,7 +141,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
       const receipt = await vote(
         {
           signer: account2.address,
-          name: GROUPID,
+          ballot: BALLOT,
           contract: ballotContractAddress,
           amount: amount.toString(),
           proposal: i.toString(),
@@ -160,7 +159,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
     const receipt = await vote(
       {
         signer: account1.address,
-        name: GROUPID,
+        ballot: BALLOT,
         contract: ballotContractAddress,
         amount: MINT_VALUE.toString(),
         proposal: idx.toString(),
@@ -173,7 +172,7 @@ export async function records(args: any, hre: HardhatRuntimeEnvironment) {
 
   RECORD.receipts = RECEIPTS;
   RECORD.winner = await winningProposal(
-    { name: GROUPID, contract: ballotContractAddress, signer: "" },
+    { ballot: 0, contract: ballotContractAddress, signer: "" },
     hre,
   );
 

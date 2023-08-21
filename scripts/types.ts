@@ -17,6 +17,10 @@ export interface Recipient {
   address: string;
 }
 
+export interface Ballot {
+  ballot: number;
+}
+
 export interface MintArgument extends Contract, Recipient {
   amount: string;
 }
@@ -28,19 +32,14 @@ export interface NewBallotArguments extends Contract {
   proposals: string;
 }
 
-export interface VoteArguments extends Contract {
-  name: string;
+export interface VoteArguments extends Contract, Ballot {
   amount: string;
   proposal: string;
 }
 
-export interface VotingPowerArgument extends Contract, Recipient {
-  name: string;
-}
+export interface VotingPowerArgument extends Contract, Recipient, Ballot {}
 
-export interface WinningProposalArgument extends Contract {
-  name: string;
-}
+export interface WinningProposalArgument extends Contract, Ballot {}
 
 export enum Status {
   SUCCESS = "SUCCESS",
